@@ -2,6 +2,10 @@ defmodule LiveViewStudioWeb.BingoLive do
   use LiveViewStudioWeb, :live_view
 
   def mount(_params, _session, socket) do
+    if connected?(socket) do
+      :timer.send_interval(:timer.seconds(3), self(), :tick)
+    end
+
     socket =
       assign(socket,
         number: nil,
@@ -20,6 +24,11 @@ defmodule LiveViewStudioWeb.BingoLive do
       </div>
     </div>
     """
+  end
+
+  def handle_info(:tick, socket) do
+    socket = pick(socket)
+    {:noreply, socket}
   end
 
   # Assigns the next random bingo number, removing it
