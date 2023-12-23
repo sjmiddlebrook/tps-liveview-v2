@@ -3,6 +3,7 @@ defmodule LiveViewStudioWeb.FlightsLive do
 
   alias LiveViewStudio.Flights
   alias LiveViewStudio.Airports
+  alias LiveViewStudioWeb.CustomComponents
 
   def mount(_params, _session, socket) do
     socket =
@@ -43,6 +44,8 @@ defmodule LiveViewStudioWeb.FlightsLive do
           <%= "#{name} (#{code})" %>
         </option>
       </datalist>
+
+      <CustomComponents.loading_indicator visible={@loading} />
 
       <div class="flights">
         <ul>
