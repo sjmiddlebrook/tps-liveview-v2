@@ -39,6 +39,7 @@ defmodule LiveViewStudioWeb.LightLive do
         max="100"
         name="brightness"
         value={@brightness}
+        phx-debounce="200"
       />
     </form>
     <h2 class="pt-12 text-lg text-start">Color Temperature</h2>
