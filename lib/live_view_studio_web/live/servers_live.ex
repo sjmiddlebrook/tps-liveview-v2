@@ -26,7 +26,7 @@ defmodule LiveViewStudioWeb.ServersLive do
         <div class="nav">
           <.link
             :for={server <- @servers}
-            patch={~p"/servers?#{[id: server.id]}"}
+            patch={~p"/servers/#{server}"}
             class={if server == @selected_server, do: "selected"}
           >
             <span class={server.status}></span>
@@ -42,37 +42,45 @@ defmodule LiveViewStudioWeb.ServersLive do
       </div>
       <div class="main">
         <div class="wrapper">
-          <div class="server">
-            <div class="header">
-              <h2><%= @selected_server.name %></h2>
-              <span class={@selected_server.status}>
-                <%= @selected_server.status %>
-              </span>
-            </div>
-            <div class="body">
-              <div class="row">
-                <span>
-                  <%= @selected_server.deploy_count %> deploys
-                </span>
-                <span>
-                  <%= @selected_server.size %> MB
-                </span>
-                <span>
-                  <%= @selected_server.framework %>
-                </span>
-              </div>
-              <h3>Last Commit Message:</h3>
-              <blockquote>
-                <%= @selected_server.last_commit_message %>
-              </blockquote>
-            </div>
-          </div>
+          <.server server={@selected_server} />
           <div class="links">
             <.link navigate={~p"/light"}>
               Adjust Lights
             </.link>
           </div>
         </div>
+      </div>
+    </div>
+    """
+  end
+
+  def server(assigns) do
+    IO.inspect(self(), label: "SERVER")
+
+    ~H"""
+    <div class="server">
+      <div class="header">
+        <h2><%= @server.name %></h2>
+        <span class={@server.status}>
+          <%= @server.status %>
+        </span>
+      </div>
+      <div class="body">
+        <div class="row">
+          <span>
+            <%= @server.deploy_count %> deploys
+          </span>
+          <span>
+            <%= @server.size %> MB
+          </span>
+          <span>
+            <%= @server.framework %>
+          </span>
+        </div>
+        <h3>Last Commit Message:</h3>
+        <blockquote>
+          <%= @server.last_commit_message %>
+        </blockquote>
       </div>
     </div>
     """
@@ -91,7 +99,13 @@ defmodule LiveViewStudioWeb.ServersLive do
 
   def handle_params(_params, _uri, socket) do
     IO.inspect(self(), label: "HANDLE PARAMS CATCH ALL")
-    {:noreply, assign(socket, selected_server: hd(socket.assigns.servers))}
+    server = hd(socket.assigns.servers)
+
+    {:noreply,
+     assign(socket,
+       selected_server: server,
+       page_title: "#{server.name} · Servers"
+     )}
   end
 
   def handle_event("drink", _, socket) do
