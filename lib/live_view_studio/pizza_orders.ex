@@ -51,6 +51,10 @@ defmodule LiveViewStudio.PizzaOrders do
 
   defp paginate(query, _options), do: query
 
+  def pizza_count do
+    Repo.aggregate(PizzaOrder, :count, :id)
+  end
+
   @doc """
   Gets a single pizza_order.
 
