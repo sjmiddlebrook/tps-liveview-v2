@@ -11,8 +11,8 @@ defmodule LiveViewStudioWeb.DonationsLive do
     sort_by = valid_sort_by(params)
     sort_order = valid_sort_order(params)
 
-    page = (params["page"] || "1") |> String.to_integer()
-    per_page = (params["per_page"] || "5") |> String.to_integer()
+    page = param_to_integer(params["page"], 1)
+    per_page = param_to_integer(params["per_page"], 5)
 
     options = %{
       sort_by: sort_by,
@@ -26,7 +26,8 @@ defmodule LiveViewStudioWeb.DonationsLive do
     {:noreply,
      assign(socket,
        donations: donations,
-       options: options
+       options: options,
+       donation_count: Donations.donation_count()
      )}
   end
 
@@ -86,6 +87,36 @@ defmodule LiveViewStudioWeb.DonationsLive do
     case sort_order do
       :asc -> :desc
       :desc -> :asc
+    end
+  end
+
+  defp param_to_integer(nil, default) do
+    default
+  end
+
+  defp param_to_integer(param, default) do
+    case Integer.parse(param) do
+      {number, _} ->
+        number
+
+      :error ->
+        default
+    end
+  end
+
+  defp more_pages?(options, donation_count) do
+    options.page * options.per_page < donation_count
+  end
+
+  defp pages(options, donation_count) do
+    page_count = ceil(donation_count / options.per_page)
+
+    for page_number <- (options.page - 2)..(options.page + 2),
+        page_number > 0 do
+      if page_number <= page_count do
+        current_page? = page_number == options.page
+        {page_number, current_page?}
+      end
     end
   end
 end

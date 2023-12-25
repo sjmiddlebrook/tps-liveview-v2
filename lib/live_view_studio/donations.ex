@@ -51,6 +51,10 @@ defmodule LiveViewStudio.Donations do
 
   defp paginate(query, _options), do: query
 
+  def donation_count do
+    Repo.aggregate(Donation, :count, :id)
+  end
+
   @doc """
   Gets a single donation.
 
